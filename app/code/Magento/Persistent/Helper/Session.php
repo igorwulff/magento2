@@ -103,7 +103,7 @@ class Session extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function isPersistent()
     {
-        return $this->getSession()->getId() && $this->_persistentData->isEnabled();
+        return $this->_persistentData->isEnabled() && $this->getSession()->getId();
     }
 
     /**
@@ -113,6 +113,10 @@ class Session extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function isRememberMeChecked()
     {
+        if (!$this->_persistentData->isEnabled()) {
+            return false;
+        }
+        
         if ($this->_isRememberMeChecked === null) {
             //Try to get from checkout session
             $isRememberMeChecked = $this->_checkoutSession->getRememberMeChecked();
@@ -122,8 +126,7 @@ class Session extends \Magento\Framework\App\Helper\AbstractHelper
                 return $isRememberMeChecked;
             }
 
-            return $this->_persistentData->isEnabled()
-                && $this->_persistentData->isRememberMeEnabled()
+            return $this->_persistentData->isRememberMeEnabled()
                 && $this->_persistentData->isRememberMeCheckedDefault();
         }
 
